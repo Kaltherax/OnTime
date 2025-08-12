@@ -1,5 +1,5 @@
 // FILE: src/hooks/useMapLibre.ts
-// This is the correct, clean code for your custom hook.
+// Updated to automatically center on the user's location.
 
 import { useRef, useEffect, useState } from 'react';
 import maplibregl, { Map, Marker } from 'maplibre-gl';
@@ -51,6 +51,43 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     };
   }, [route]);
 
+  // --- NEW --- Effect to get user's location and center the map
+  useEffect(() => {
+    if (!isMapLoaded || !map.current) return;
+
+    // Check if Geolocation is supported
+    if (!navigator.geolocation) {
+      console.log("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const userCoords: Coordinates = { lat: latitude, lng: longitude };
+        
+        setUserLocation(userCoords);
+
+        // Animate the map to the user's location
+        map.current?.flyTo({
+          center: [userCoords.lng, userCoords.lat],
+          zoom: 15, // Zoom in closer on the user
+          essential: true,
+        });
+
+        // Add a marker for the user's location
+        const el = document.createElement('div');
+        el.className = 'user-marker'; // You can style this in your CSS
+        new Marker(el)
+          .setLngLat([userCoords.lng, userCoords.lat])
+          .addTo(map.current!);
+      },
+      (error) => {
+        console.error("Error getting user location:", error.message);
+      }
+    );
+  }, [isMapLoaded]); // Run this effect once the map is loaded
+
   // Effect for updating markers on the map
   useEffect(() => {
     if (!isMapLoaded || !map.current) return;
@@ -60,7 +97,6 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     route.stops.forEach(stop => {
       const el = document.createElement('div');
       el.className = 'map-marker stop-marker';
-      // Add custom HTML/styling for your stop markers here
       new Marker(el)
         .setLngLat([stop.coordinates.lng, stop.coordinates.lat])
         .addTo(map.current!);
@@ -73,7 +109,6 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     } else {
       const el = document.createElement('div');
       el.className = 'map-marker bus-marker';
-      // Add custom HTML/styling for your bus marker here
       busMarkerRef.current = new Marker(el)
         .setLngLat(busCoords)
         .addTo(map.current!);
