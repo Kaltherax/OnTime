@@ -54,8 +54,8 @@ const BusMap: React.FC<BusMapProps> = ({
       <style>{`
         /* --- NEW CSS FOR 3D BUS --- */
         .bus-3d-container {
-          width: 50px;
-          height: 50px;
+          width: 60px;
+          height: 60px;
           perspective: 1000px; /* This creates the 3D space */
         }
 
@@ -64,43 +64,81 @@ const BusMap: React.FC<BusMapProps> = ({
           height: 100%;
           position: relative;
           transform-style: preserve-3d;
-          transform: rotateX(-20deg) rotateY(-30deg); /* Adjust angle of the bus */
+          transform: rotateX(-20deg) rotateY(-45deg); /* Adjust angle of the bus */
           animation: bus-hover 2s infinite ease-in-out;
         }
 
         .bus-face {
           position: absolute;
-          border: 1px solid #014a78;
-          background-color: rgba(2, 119, 189, 0.8); /* Semi-transparent blue */
+          border: 1px solid #003d6e;
+          background-color: #005a9e; /* Darker, solid blue */
+        }
+        
+        .bus-face.bus-top {
+           background-color: #004c8c;
+        }
+        
+        .bus-face.bus-front::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            height: 12px;
+            background: #b3e5fc; /* Windshield */
+            border-radius: 2px;
         }
 
         /* Dimensions of the bus */
-        .bus-front, .bus-back { width: 50px; height: 30px; }
-        .bus-right, .bus-left { width: 25px; height: 30px; }
-        .bus-top, .bus-bottom { width: 50px; height: 25px; }
+        .bus-front, .bus-back { width: 40px; height: 35px; }
+        .bus-right, .bus-left { width: 60px; height: 35px; }
+        .bus-top, .bus-bottom { width: 40px; height: 60px; }
 
         /* Positioning each face to form a cuboid */
-        .bus-front  { transform: rotateY(0deg) translateZ(12.5px); }
-        .bus-back   { transform: rotateY(180deg) translateZ(12.5px); }
-        .bus-right  { transform: rotateY(90deg) translateZ(25px); }
-        .bus-left   { transform: rotateY(-90deg) translateZ(25px); }
-        .bus-top    { transform: rotateX(90deg) translateZ(15px); background-color: #01579b; }
-        .bus-bottom { transform: rotateX(-90deg) translateZ(15px); }
+        .bus-front  { transform: rotateY(0deg) translateZ(30px); }
+        .bus-back   { transform: rotateY(180deg) translateZ(30px); }
+        .bus-right  { transform: rotateY(90deg) translateZ(20px); }
+        .bus-left   { transform: rotateY(-90deg) translateZ(20px); }
+        .bus-top    { transform: rotateX(90deg) translateZ(17.5px); }
+        .bus-bottom { transform: rotateX(-90deg) translateZ(17.5px); }
 
         @keyframes bus-hover {
-          0%, 100% { transform: rotateX(-20deg) rotateY(-30deg) translateY(0); }
-          50% { transform: rotateX(-20deg) rotateY(-30deg) translateY(-5px); }
+          0%, 100% { transform: rotateX(-20deg) rotateY(-45deg) translateY(0); }
+          50% { transform: rotateX(-20deg) rotateY(-45deg) translateY(-5px); }
         }
 
-        /* --- Stop Marker Style --- */
+        /* --- NEW Stop Marker Style --- */
         .stop-marker {
-          width: 12px;
-          height: 12px;
-          background-color: #10B981; /* Green */
-          border-radius: 50%;
-          border: 2px solid white;
-          box-shadow: 0 0 5px rgba(0,0,0,0.5);
+          width: 30px;
+          height: 30px;
+          position: relative;
           cursor: pointer;
+        }
+        
+        .stop-marker::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: #008080; /* Teal */
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            left: 3px;
+            top: -3px;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+        
+        .stop-marker::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 50%;
+            left: 11px;
+            top: 5px;
+            z-index: 1;
         }
       `}</style>
     </div>
