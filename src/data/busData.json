@@ -6,31 +6,31 @@
       "stops": [
         {
           "id": "stop1",
-          "name": "Main Entrance",
+          "name": "Chavakadu",
           "coordinates": { "lat": 40.7589, "lng": -73.9851 },
           "order": 1
         },
         {
           "id": "stop2",
-          "name": "Library",
+          "name": "Guruvayur",
           "coordinates": { "lat": 40.7614, "lng": -73.9776 },
           "order": 2
         },
         {
           "id": "stop3",
-          "name": "Student Center",
+          "name": "Puzhakkal",
           "coordinates": { "lat": 40.7505, "lng": -73.9934 },
           "order": 3
         },
         {
           "id": "stop4",
-          "name": "Engineering Building",
+          "name": "Mundur",
           "coordinates": { "lat": 40.7549, "lng": -73.9840 },
           "order": 4
         },
         {
           "id": "stop5",
-          "name": "Dormitories",
+          "name": "Peramankallam",
           "coordinates": { "lat": 40.7580, "lng": -73.9855 },
           "order": 5
         }
