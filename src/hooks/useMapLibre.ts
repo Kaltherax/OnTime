@@ -1,5 +1,5 @@
 // FILE: src/hooks/useMapLibre.ts
-// Updated to create the HTML structure for a 3D CSS bus.
+// Updated to automatically center on the user's location.
 
 import { useRef, useEffect, useState } from 'react';
 import maplibregl, { Map, Marker } from 'maplibre-gl';
@@ -11,6 +11,7 @@ interface UseMapLibreProps {
   selectedStopId: string | null;
 }
 
+// Read the API key from Vite's environment variables
 const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_API_KEY;
 
 export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreProps) => {
@@ -25,21 +26,24 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     if (map.current || !mapContainer.current) return;
 
     if (!MAPTILER_API_KEY) {
-      console.error("MapTiler API key is missing.");
+      console.error("MapTiler API key is missing. Ensure it's set in your GitHub Secrets as VITE_MAPTILER_API_KEY.");
       return;
     }
 
     const initialCoords = route.stops[0].coordinates;
+
     map.current = new maplibregl.Map({
       container: mapContainer.current,
       style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_API_KEY}`,
       center: [initialCoords.lng, initialCoords.lat],
       zoom: 14,
-      pitch: 50, // Increased pitch for a better 3D view
-      bearing: -20,
+      pitch: 45,
+      bearing: -17.6,
     });
 
-    map.current.on('load', () => setIsMapLoaded(true));
+    map.current.on('load', () => {
+      setIsMapLoaded(true);
+    });
 
     return () => {
       map.current?.remove();
@@ -47,42 +51,65 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     };
   }, [route]);
 
+  // --- NEW --- Effect to get user's location and center the map
+  useEffect(() => {
+    if (!isMapLoaded || !map.current) return;
+
+    // Check if Geolocation is supported
+    if (!navigator.geolocation) {
+      console.log("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const userCoords: Coordinates = { lat: latitude, lng: longitude };
+        
+        setUserLocation(userCoords);
+
+        // Animate the map to the user's location
+        map.current?.flyTo({
+          center: [userCoords.lng, userCoords.lat],
+          zoom: 15, // Zoom in closer on the user
+          essential: true,
+        });
+
+        // Add a marker for the user's location
+        const el = document.createElement('div');
+        el.className = 'user-marker'; // You can style this in your CSS
+        new Marker(el)
+          .setLngLat([userCoords.lng, userCoords.lat])
+          .addTo(map.current!);
+      },
+      (error) => {
+        console.error("Error getting user location:", error.message);
+      }
+    );
+  }, [isMapLoaded]); // Run this effect once the map is loaded
+
   // Effect for updating markers on the map
   useEffect(() => {
     if (!isMapLoaded || !map.current) return;
 
-    // Remove old stop markers before adding new ones
-    document.querySelectorAll('.stop-marker').forEach(el => el.remove());
-
-    // Add bus stop markers
+    // Clear and re-add stop markers
+    document.querySelectorAll('.map-marker.stop-marker').forEach(el => el.remove());
     route.stops.forEach(stop => {
       const el = document.createElement('div');
-      el.className = 'stop-marker';
-      // You can add more complex HTML for stop markers here if you wish
+      el.className = 'map-marker stop-marker';
       new Marker(el)
         .setLngLat([stop.coordinates.lng, stop.coordinates.lat])
         .addTo(map.current!);
     });
 
-    // Update or create the 3D bus marker
+    // Update bus marker
     const busCoords: [number, number] = [busLocation.coordinates.lng, busLocation.coordinates.lat];
     if (busMarkerRef.current) {
       busMarkerRef.current.setLngLat(busCoords);
     } else {
       const el = document.createElement('div');
-      el.className = 'bus-3d-container';
-      // This HTML structure creates the 3D bus
-      el.innerHTML = `
-        <div class="bus-3d">
-          <div class="bus-face bus-front"></div>
-          <div class="bus-face bus-back"></div>
-          <div class="bus-face bus-right"></div>
-          <div class="bus-face bus-left"></div>
-          <div class="bus-face bus-top"></div>
-          <div class="bus-face bus-bottom"></div>
-        </div>
-      `;
-      busMarkerRef.current = new Marker({ element: el, anchor: 'bottom' })
+      el.className = 'map-marker bus-marker';
+      busMarkerRef.current = new Marker(el)
         .setLngLat(busCoords)
         .addTo(map.current!);
     }
