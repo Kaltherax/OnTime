@@ -1,28 +1,23 @@
-# Simple workflow for deploying static content to GitHub Pages
+# FILE: .github/workflows/deploy.yml
+# This file is updated to use the GitHub Secret.
+
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
@@ -39,14 +34,98 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build
+        # 👇 This 'env' section makes the secret available during the build
+        env:
+          VITE_MAPTILER_API_KEY: ${{ secrets.VITE_MAPTILER_API_KEY }}
         run: npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload dist folder
           path: './dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+```typescript
+// FILE: src/hooks/useMapLibre.ts
+// This file is updated to read the API key from the environment variable.
+
+import { useRef, useEffect, useState } from 'react';
+import maplibregl, { Map } from 'maplibre-gl';
+import { BusRoute, BusLocation, Coordinates } from '../types/bus';
+
+interface UseMapLibreProps {
+  route: BusRoute;
+  busLocation: BusLocation;
+  selectedStopId: string | null;
+}
+
+// Read the API key from Vite's environment variables
+const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_API_KEY;
+
+export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreProps) => {
+  const mapContainer = useRef<HTMLDivElement | null>(null);
+  const map = useRef<Map | null>(null);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
+
+  useEffect(() => {
+    if (map.current || !mapContainer.current) return;
+
+    if (!MAPTILER_API_KEY) {
+      console.error("MapTiler API key is missing. Ensure it's set in your GitHub Secrets as VITE_MAPTILER_API_KEY.");
+      return;
+    }
+
+    const initialCoords = route.stops[0].coordinates;
+
+    map.current = new maplibregl.Map({
+      container: mapContainer.current,
+      style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_API_KEY}`,
+      center: [initialCoords.lng, initialCoords.lat],
+      zoom: 14,
+      pitch: 45,
+      bearing: -17.6,
+    });
+
+    map.current.on('load', () => {
+      setIsMapLoaded(true);
+    });
+
+    return () => {
+      map.current?.remove();
+      map.current = null;
+    };
+  }, [route]);
+
+  // Effect to update markers when data changes (no changes needed here)
+  useEffect(() => {
+    if (!isMapLoaded || !map.current) return;
+
+    // This logic remains the same
+    document.querySelectorAll('.map-marker').forEach(el => el.remove());
+
+    route.stops.forEach(stop => {
+      const el = document.createElement('div');
+      el.className = 'map-marker stop-marker';
+      if (stop.id === selectedStopId) {
+        el.classList.add('selected');
+      }
+      el.innerHTML = `<div class="stop-icon"><div class="stop-sign">${stop.name}</div><div class="stop-pole"></div></div>`;
+      new maplibregl.Marker(el)
+        .setLngLat([stop.coordinates.lng, stop.coordinates.lat])
+        .addTo(map.current!);
+    });
+
+    const busEl = document.createElement('div');
+    busEl.className = 'map-marker bus-marker';
+    busEl.innerHTML = `<div class="bus-3d"><div class="bus-body"><div class="bus-windows"></div></div><div class="bus-wheels"><div class="wheel wheel-front"></div><div class="wheel wheel-back"></div></div></div>`;
+    new maplibregl.Marker(busEl)
+      .setLngLat([busLocation.coordinates.lng, busLocation.coordinates.lat])
+      .addTo(map.current!);
+
+  }, [isMapLoaded, route, busLocation, selectedStopId]);
+
+  return { mapContainer, userLocation, isMapLoaded };
+};
