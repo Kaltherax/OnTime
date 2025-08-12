@@ -1,0 +1,54 @@
+{
+  "busRoutes": [
+    {
+      "id": "route1",
+      "name": "Campus Loop",
+      "stops": [
+        {
+          "id": "stop1",
+          "name": "Main Entrance",
+          "coordinates": { "lat": 40.7589, "lng": -73.9851 },
+          "order": 1
+        },
+        {
+          "id": "stop2",
+          "name": "Library",
+          "coordinates": { "lat": 40.7614, "lng": -73.9776 },
+          "order": 2
+        },
+        {
+          "id": "stop3",
+          "name": "Student Center",
+          "coordinates": { "lat": 40.7505, "lng": -73.9934 },
+          "order": 3
+        },
+        {
+          "id": "stop4",
+          "name": "Engineering Building",
+          "coordinates": { "lat": 40.7549, "lng": -73.9840 },
+          "order": 4
+        },
+        {
+          "id": "stop5",
+          "name": "Dormitories",
+          "coordinates": { "lat": 40.7580, "lng": -73.9855 },
+          "order": 5
+        }
+      ]
+    }
+  ],
+  "currentBusLocation": {
+    "routeId": "route1",
+    "coordinates": { "lat": 40.7589, "lng": -73.9851 },
+    "currentStopIndex": 0,
+    "direction": "forward",
+    "lastUpdated": "2025-01-27T10:30:00Z"
+  },
+  "estimatedArrivalTimes": {
+    "stop1": "2 minutes",
+    "stop2": "8 minutes",
+    "stop3": "15 minutes",
+    "stop4": "22 minutes",
+    "stop5": "28 minutes"
+  }
+}
