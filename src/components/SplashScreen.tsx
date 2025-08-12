@@ -4,25 +4,47 @@ const SplashScreen = () => {
   return (
     <div className="loading-overlay">
       <div className="animation-container">
+        {/* Background Elements */}
+        <div className="mountain mountain1"></div>
+        <div className="mountain mountain2"></div>
+        
+        {/* Scenery Elements */}
         <div className="scenery">
           <div className="tree tree1"></div>
           <div className="tree tree2"></div>
           <div className="tree tree3"></div>
         </div>
+
+        {/* Road and Bus */}
         <div className="road">
           <div className="bus">
-            <div className="bus-body">
-              <div className="bus-window-front"></div>
-              <div className="bus-window-middle"></div>
-              <div className="bus-window-back"></div>
-              <div className="bus-stripe"></div>
+            <div className="bus-top-body">
+              <div className="bus-window"></div>
+              <div className="bus-window"></div>
+              <div className="bus-window"></div>
+              <div className="bus-window"></div>
+              <div className="bus-window"></div>
+            </div>
+            <div className="bus-middle-body">
+              <div className="stop-sign-base">
+                <div className="stop-sign-arm"></div>
+              </div>
             </div>
             <div className="wheel-front"></div>
             <div className="wheel-back"></div>
           </div>
-          <div className="wind-effect wind1"></div>
-          <div className="wind-effect wind2"></div>
-          <div className="wind-effect wind3"></div>
+        </div>
+        
+        {/* Wind Effects */}
+        <div className="wind-container">
+            <div className="wind-line"></div>
+            <div className="wind-line"></div>
+            <div className="wind-line"></div>
+        </div>
+        <div className="wind-container wind-container2">
+            <div className="wind-line"></div>
+            <div className="wind-line"></div>
+            <div className="wind-line"></div>
         </div>
       </div>
       <div className="loading-tagline">
@@ -37,139 +59,169 @@ const SplashScreen = () => {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          background-color: rgba(249, 250, 251, 0.9); /* semi-transparent bg-gray-50 */
+          background-color: rgba(249, 250, 251, 0.9);
           z-index: 9999;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
         .animation-container {
-          width: 400px;
-          height: 250px;
-          background-color: #87CEEB; /* Sky blue */
+          width: 500px;
+          height: 300px;
+          background-color: #f0f0f0;
           border-radius: 16px;
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
           position: relative;
           overflow: hidden;
-          border: 2px solid #fff;
+          border: 2px solid #ddd;
         }
+
+        .mountain {
+            position: absolute;
+            bottom: 20%;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 200px solid #a9a9a9;
+        }
+        .mountain1 { left: 0; }
+        .mountain2 { right: 0; }
 
         .road {
           position: absolute;
           bottom: 0;
           left: 0;
           width: 100%;
-          height: 25%;
-          background: #6B6B6B;
-          border-top: 8px solid #4A4A4A;
+          height: 20%;
+          background: #444;
         }
 
         .scenery {
           position: absolute;
-          bottom: 25%;
+          bottom: 20%;
           left: 0;
           width: 100%;
-          height: 15%;
+          height: 10%;
         }
 
         .tree {
           position: absolute;
           bottom: 0;
-          width: 15px;
-          height: 40px;
-          background-color: #5D4037; /* Brown for trunk */
-          animation: scenery-scroll-contained 3s linear infinite;
+          width: 10px;
+          height: 20px;
+          background-color: #8B4513;
+          animation: scenery-scroll-contained 5s linear infinite;
         }
-
         .tree::before {
           content: '';
           position: absolute;
-          bottom: 30px;
+          bottom: 15px;
           left: 50%;
           transform: translateX(-50%);
-          width: 50px;
-          height: 50px;
-          background-color: #388E3C; /* Green for leaves */
+          width: 30px;
+          height: 30px;
+          background-color: #2E8B57;
           border-radius: 50%;
         }
-        
-        .tree::after {
-          content: '';
-          position: absolute;
-          bottom: 45px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 40px;
-          height: 40px;
-          background-color: #4CAF50; /* Lighter green */
-          border-radius: 50%;
-        }
-
-        .tree1 { left: 120%; animation-duration: 4s; }
-        .tree2 { left: 150%; animation-duration: 3.5s; animation-delay: 1.5s; }
-        .tree3 { left: 180%; animation-duration: 4.2s; animation-delay: 2.5s; }
+        .tree1 { left: 110%; animation-duration: 4s; }
+        .tree2 { left: 140%; animation-duration: 3.5s; animation-delay: 2s; }
+        .tree3 { left: 170%; animation-duration: 4.5s; animation-delay: 3s; }
 
         .bus {
           position: absolute;
-          bottom: 30%;
-          left: -150px; /* Start off-screen of container */
-          width: 120px;
-          height: 60px;
-          transform: scale(0.7);
-          animation: drive-across-contained 4s ease-in-out infinite;
+          bottom: 25%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 150px;
+          height: 70px;
+          animation: bus-jiggle 0.5s infinite ease-in-out;
         }
 
-        .bus-body {
+        .bus-top-body {
           width: 100%;
-          height: 50px;
-          background-color: #0277bd; /* A nice blue */
-          border-radius: 10px 10px 3px 3px;
-          border: 2px solid #01579b;
-          position: relative;
+          height: 45px;
+          background-color: #FFD700;
+          border-radius: 10px 10px 0 0;
+          border: 2px solid #DAA520;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          padding: 0 5px;
         }
-
-        .bus-window-front, .bus-window-middle, .bus-window-back {
-          position: absolute;
-          top: 8px;
-          height: 20px;
-          background-color: #B3E5FC;
-          border: 2px solid #01579b;
-          border-radius: 3px;
-        }
-        .bus-window-front { left: 10px; width: 25px; }
-        .bus-window-middle { left: 40px; width: 40px; }
-        .bus-window-back { right: 10px; width: 25px; }
         
-        .bus-stripe {
-          position: absolute;
-          bottom: 10px;
-          width: 100%;
-          height: 5px;
-          background-color: #FFCA28;
+        .bus-window {
+            width: 15%;
+            height: 25px;
+            background: #E0FFFF;
+            border: 1px solid #87CEEB;
+        }
+
+        .bus-middle-body {
+            width: 100%;
+            height: 25px;
+            background-color: #FFD700;
+            border-left: 2px solid #DAA520;
+            border-right: 2px solid #DAA520;
+            border-bottom: 2px solid #DAA520;
+            position: relative;
+        }
+        
+        .stop-sign-base {
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: red;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        .stop-sign-arm {
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 4px;
+            background: #444;
         }
 
         .wheel-front, .wheel-back {
           position: absolute;
-          bottom: -10px;
-          width: 25px;
-          height: 25px;
-          background-color: #212121;
+          bottom: -15px;
+          width: 30px;
+          height: 30px;
+          background-color: #333;
           border-radius: 50%;
-          border: 3px solid #424242;
-          animation: spin 0.5s linear infinite;
+          border: 4px solid #555;
+          animation: spin 0.4s linear infinite;
         }
         .wheel-front { left: 15px; }
         .wheel-back { right: 15px; }
-
-        .wind-effect {
-          position: absolute;
-          height: 2px;
-          background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.5));
-          border-radius: 2px;
-          animation: wind-streak-contained 0.8s linear infinite;
+        
+        .wind-container {
+            position: absolute;
+            left: 50%;
+            top: 55%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            animation: wind-move 5s linear infinite;
         }
-        .wind1 { top: -40px; left: 110%; width: 60px; animation-duration: 0.6s; }
-        .wind2 { top: -20px; left: 130%; width: 90px; animation-duration: 0.8s; animation-delay: 0.2s; }
-        .wind3 { top: -50px; left: 120%; width: 50px; animation-duration: 0.5s; animation-delay: 0.5s; }
+        .wind-container2 {
+            left: -50%;
+            animation-delay: 2.5s;
+        }
+        .wind-line {
+            width: 30px;
+            height: 2px;
+            background: #555;
+            border-radius: 2px;
+        }
+        .wind-line:nth-child(2) {
+            margin-left: 10px;
+        }
 
         .loading-tagline {
           margin-top: 20px;
@@ -177,29 +229,29 @@ const SplashScreen = () => {
         }
 
         .loading-tagline p {
-          color: #4b5563; /* gray-600 */
+          color: #4b5563;
           font-size: 1.1rem;
           font-weight: 500;
         }
 
-        @keyframes drive-across-contained {
-          0% { transform: translateX(0) scale(0.7); }
-          100% { transform: translateX(550px) scale(0.7); } /* 400px container width + buffer */
-        }
-
         @keyframes scenery-scroll-contained {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-550px); }
+          from { transform: translateX(250px); }
+          to { transform: translateX(-250px); }
         }
-
-        @keyframes wind-streak-contained {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-550px); }
+        
+        @keyframes wind-move {
+            from { transform: translateX(250px); }
+            to { transform: translateX(-250px); }
         }
 
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+        
+        @keyframes bus-jiggle {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, -2px); }
         }
       `}</style>
     </div>
