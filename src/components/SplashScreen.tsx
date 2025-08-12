@@ -2,164 +2,100 @@ import React from 'react';
 
 const SplashScreen = () => {
   return (
-    <div className="splash-screen">
-      <div className="sky"></div>
-      <div className="road">
-        <div className="bus">
-          <div className="bus-top">
-            <div className="bus-windows"></div>
+    <div className="splash-container">
+      <div className="splash-content">
+        <div className="bus-animation">
+          <div className="bus-body">
+            <div className="bus-window"></div>
           </div>
-          <div className="bus-bottom"></div>
+          <div className="wheel-container">
+            <div className="wheel"></div>
+            <div className="wheel"></div>
+          </div>
         </div>
-        
-        {/* Scenery Elements */}
-        <div className="tree tree1"></div>
-        <div className="tree tree2"></div>
-        <div className="tree tree3"></div>
-
-        {/* Wind Effects */}
-        <div className="wind wind1"></div>
-        <div className="wind wind2"></div>
-        <div className="wind wind3"></div>
-
-      </div>
-      <div className="tagline">
-        <h1>On Time</h1>
-        <p>Forget about guessing where your college bus is now</p>
+        <p className="tagline-text">
+          Forget about guessing where your college bus is now
+        </p>
       </div>
 
       <style>{`
-        .splash-screen {
+        .splash-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           position: fixed;
           inset: 0;
-          background-color: #87CEEB; /* Sky Blue */
-          overflow: hidden;
+          background-color: #f9fafb; /* bg-gray-50 */
           z-index: 9999;
         }
 
-        .road {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 30%;
-          background: #6B6B6B;
-          border-top: 10px solid #4A4A4A;
+        .splash-content {
+          text-align: center;
+          animation: fade-in 0.5s ease-in-out;
         }
 
-        .bus {
-          position: absolute;
-          bottom: 20%; /* Position bus on the road */
-          left: -200px; /* Start off-screen */
-          width: 150px;
-          height: 80px;
-          animation: drive-by 4s ease-in-out forwards;
+        .bus-animation {
+          width: 100px;
+          height: 60px;
+          margin: 0 auto 20px auto;
+          position: relative;
+          animation: bus-jiggle 0.8s infinite ease-in-out;
         }
 
-        .bus-top {
+        .bus-body {
           width: 100%;
           height: 50px;
-          background: #FFD700; /* Yellow */
-          border-radius: 10px 10px 0 0;
-          position: relative;
-        }
-
-        .bus-windows {
-          width: 90%;
-          height: 25px;
-          background: #ADD8E6; /* Light Blue */
+          background-color: #3b82f6; /* blue-500 */
+          border-radius: 10px 10px 4px 4px;
           position: absolute;
-          top: 5px;
-          left: 5%;
-          border-radius: 5px;
+          bottom: 10px;
+          border: 2px solid #1e40af; /* darker blue */
         }
 
-        .bus-bottom {
+        .bus-window {
+          width: 80%;
+          height: 20px;
+          background-color: #bfdbfe; /* blue-200 */
+          margin: 5px auto;
+          border-radius: 4px;
+        }
+
+        .wheel-container {
+          position: absolute;
+          bottom: 0;
           width: 100%;
-          height: 30px;
-          background: #F08080; /* Light Coral Red */
-        }
-        
-        .tree {
-            position: absolute;
-            bottom: 30%; /* On the road level */
-            width: 20px;
-            height: 60px;
-            background: #228B22; /* Forest Green */
-            animation: scenery-scroll 3s linear infinite;
-        }
-        .tree::before {
-            content: '';
-            position: absolute;
-            bottom: 60px;
-            left: -15px;
-            width: 50px;
-            height: 50px;
-            background: #006400; /* Dark Green */
-            border-radius: 50%;
+          display: flex;
+          justify-content: space-between;
+          padding: 0 10px;
         }
 
-        .tree1 { left: 110%; animation-duration: 2s; }
-        .tree2 { left: 140%; animation-duration: 2.5s; animation-delay: 0.5s; }
-        .tree3 { left: 170%; animation-duration: 2.2s; animation-delay: 1s; }
-
-
-        .wind {
-            position: absolute;
-            bottom: 40%;
-            width: 50px;
-            height: 2px;
-            background: white;
-            opacity: 0.6;
-            animation: wind-blow 0.5s linear infinite;
+        .wheel {
+          width: 20px;
+          height: 20px;
+          background-color: #1f2937; /* gray-800 */
+          border-radius: 50%;
+          border: 2px solid #4b5563; /* gray-600 */
+          animation: spin 1s linear infinite;
         }
 
-        .wind1 { left: 120%; animation-delay: 0.1s; }
-        .wind2 { left: 150%; bottom: 50%; animation-delay: 0.3s; }
-        .wind3 { left: 130%; bottom: 35%; animation-delay: 0.6s; }
-
-
-        .tagline {
-          position: absolute;
-          bottom: 10%;
-          left: 50%;
-          transform: translateX(-50%);
-          text-align: center;
-          color: white;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-          opacity: 0;
-          animation: fade-in 2s ease-in forwards;
-          animation-delay: 1s;
-        }
-
-        .tagline h1 {
-          font-size: 3rem;
-          font-weight: bold;
-          margin: 0;
-        }
-
-        .tagline p {
-          font-size: 1.2rem;
-        }
-
-        @keyframes drive-by {
-          0% { left: -200px; }
-          40% { left: 50%; transform: translateX(-50%) scale(1.2); }
-          100% { left: 120%; transform: translateX(-50%) scale(1); }
-        }
-
-        @keyframes scenery-scroll {
-            from { transform: translateX(0); }
-            to { transform: translateX(-150vw); }
-        }
-        
-        @keyframes wind-blow {
-            from { transform: translateX(0); }
-            to { transform: translateX(-150vw); }
+        .tagline-text {
+          color: #4b5563; /* gray-600 */
+          font-size: 1rem;
         }
 
         @keyframes fade-in {
-          to { opacity: 1; }
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes bus-jiggle {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </div>
