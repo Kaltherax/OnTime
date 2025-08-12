@@ -4,6 +4,7 @@ import BusMap from './components/BusMap';
 import ETACard from './components/ETACard';
 import StopSelector from './components/StopSelector';
 import Footer from './components/Footer';
+import SplashScreen from './components/SplashScreen'; // 👈 1. Import the new component
 import { useNotification } from './hooks/useNotification';
 import { 
   fetchBusLocation, 
@@ -36,12 +37,15 @@ function App() {
         setBusLocation(initialBusLocation);
         setEta(initialEta);
         
-        // Request notification permission
         await requestPermission();
       } catch (error) {
         console.error('Failed to initialize app:', error);
       } finally {
-        setIsLoading(false);
+        // This is a good place to hide the splash screen
+        // For a smoother effect, let the animation play out
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 4000); // Match the animation duration
       }
     };
 
@@ -52,7 +56,6 @@ function App() {
   useEffect(() => {
     if (!busData || !busLocation || !selectedStopId) return;
 
-    // Simulate proximity alert for demo - trigger after 3 seconds of selecting a stop
     const alertTimeout = setTimeout(() => {
       const route = busData.busRoutes[0];
       const selectedStop = route.stops.find(stop => stop.id === selectedStopId);
@@ -72,15 +75,9 @@ function App() {
     return () => clearTimeout(alertTimeout);
   }, [selectedStopId, busData, busLocation, showNotification]);
 
+  // 👇 2. Show SplashScreen while loading
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading bus tracker...</p>
-        </div>
-      </div>
-    );
+    return <SplashScreen />;
   }
 
   if (!busData || !busLocation) {
@@ -93,7 +90,7 @@ function App() {
     );
   }
 
-  const currentRoute = busData.busRoutes[0]; // Using first route for demo
+  const currentRoute = busData.busRoutes[0];
   const selectedStop = currentRoute.stops.find(stop => stop.id === selectedStopId);
 
   return (
@@ -102,7 +99,6 @@ function App() {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Map Section */}
           <div className="lg:col-span-2">
             <BusMap
               route={currentRoute}
@@ -112,7 +108,6 @@ function App() {
             />
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
             <StopSelector
               stops={currentRoute.stops}
@@ -125,23 +120,6 @@ function App() {
               selectedStopId={selectedStopId}
               selectedStopName={selectedStop?.name || null}
             />
-          </div>
-        </div>
-
-        {/* Mobile-friendly bottom section */}
-        <div className="mt-8 lg:hidden">
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Quick Info</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-gray-600">Current Route:</span>
-                <p className="font-medium">{currentRoute.name}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Total Stops:</span>
-                <p className="font-medium">{currentRoute.stops.length}</p>
-              </div>
-            </div>
           </div>
         </div>
       </main>
