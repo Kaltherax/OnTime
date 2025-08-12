@@ -3,8 +3,8 @@ import Header from './components/Header';
 import BusMap from './components/BusMap';
 import ETACard from './components/ETACard';
 import StopSelector from './components/StopSelector';
-import Footer from './components/Footer';
-import SplashScreen from './components/SplashScreen'; // 👈 1. Import the new component
+// import Footer from './components/Footer'; // 👈 1. This import is removed
+import SplashScreen from './components/SplashScreen';
 import { useNotification } from './hooks/useNotification';
 import { 
   fetchBusLocation, 
@@ -75,7 +75,7 @@ function App() {
     return () => clearTimeout(alertTimeout);
   }, [selectedStopId, busData, busLocation, showNotification]);
 
-  // 👇 2. Show SplashScreen while loading
+  // Show SplashScreen while loading
   if (isLoading) {
     return <SplashScreen />;
   }
@@ -124,7 +124,7 @@ function App() {
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */} {/* 👈 2. This component is removed */}
     </div>
   );
 }
