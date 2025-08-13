@@ -72,9 +72,9 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
           // 1. Zoom out smoothly
           await map.current?.flyTo({ zoom: 5, duration: 4000 });
           // 2. Wait for a shorter period
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          await new Promise(resolve => setTimeout(resolve, 5000));
           // 3. Accurately fly to the user and zoom in
-          await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 17, duration: 5000, essential: true });
+          await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 18, duration: 10000, essential: true });
         } catch (error) { console.log("Animation interrupted."); }
       },
       (error) => console.error("Error getting user location:", error.message)
@@ -89,9 +89,9 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
     
     try {
       // Smoother timings for locating the bus
-      await map.current?.flyTo({ zoom: 12, duration: 2500 });
-      await map.current?.flyTo({ center: busCoords, duration: 3500 });
-      await map.current?.flyTo({ center: busCoords, zoom: 17, duration: 2500 });
+      await map.current?.flyTo({ zoom: 12, duration: 5000 });
+      await map.current?.flyTo({ center: busCoords, duration: 4000 });
+      await map.current?.flyTo({ center: busCoords, zoom: 17, duration: 10000 });
     } catch (error) {
       console.log("Animation was interrupted.");
     }
