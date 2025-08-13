@@ -35,7 +35,7 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
       container: mapContainer.current,
       style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_API_KEY}`,
       center: [initialCoords.lng, initialCoords.lat],
-      zoom: 14, pitch: 45, bearing: -17.6,
+      zoom: 18, pitch: 45, bearing: -17.6,
     });
     map.current.on('load', () => setIsMapLoaded(true));
     return () => {
@@ -68,7 +68,7 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
         setBusLocation(prev => ({...prev, coordinates: { lat: offsetLatitude, lng: longitude }}));
         
         try {
-          await map.current?.flyTo({ zoom: 5, duration: 2000 });
+          await map.current?.flyTo({ zoom: 5, duration: 5000 });
           await new Promise(resolve => setTimeout(resolve, 1000));
           await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 15, duration: 8000, essential: true });
         } catch (error) { console.log("Animation interrupted."); }
