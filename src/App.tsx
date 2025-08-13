@@ -4,7 +4,7 @@ import BusMap from './components/BusMap';
 import ETACard from './components/ETACard';
 import StopSelector from './components/StopSelector';
 import SplashScreen from './components/SplashScreen';
-import ParallaxAnimation from './components/ParallaxAnimation'; // 👈 1. Import the new component
+import ParallaxAnimation from './components/ParallaxAnimation';
 import { useNotification } from './hooks/useNotification';
 import { 
   fetchBusLocation, 
@@ -64,12 +64,12 @@ function App() {
 
   return (
     // --- THIS IS THE FIX ---
-    // Use flexbox to manage the layout
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    // This layout ensures both sections are visible
+    <div className="h-screen bg-gray-50 flex flex-col">
       <Header />
       
-      {/* The main content will now take up the available space */}
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+      {/* This makes the main content area scrollable if it's too tall */}
+      <main className="flex-grow overflow-y-auto max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <BusMap
@@ -96,7 +96,7 @@ function App() {
         </div>
       </main>
 
-      {/* The animation will now be visible at the bottom */}
+      {/* The animation is now guaranteed to be visible at the bottom */}
       <ParallaxAnimation /> 
     </div>
   );
