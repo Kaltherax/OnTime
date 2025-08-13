@@ -63,10 +63,13 @@ function App() {
   const selectedStop = currentRoute.stops.find(stop => stop.id === selectedStopId);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    // --- THIS IS THE FIX ---
+    // Use flexbox to manage the layout
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* The main content will now take up the available space */}
+      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <BusMap
@@ -93,7 +96,7 @@ function App() {
         </div>
       </main>
 
-      {/* 👇 2. Add the animation component here */}
+      {/* The animation will now be visible at the bottom */}
       <ParallaxAnimation /> 
     </div>
   );
