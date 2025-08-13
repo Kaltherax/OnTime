@@ -70,6 +70,7 @@ const SplashScreen = () => {
           transform: translateX(-100vw) scale(0.8);
           filter: drop-shadow(0 4px 20px rgba(59, 130, 246, 0.3));
           transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+          margin-bottom: 2rem; /* Add some space between bus and text */
         }
 
         .bus-icon.entering {
@@ -83,7 +84,7 @@ const SplashScreen = () => {
 
         .text-content {
           text-align: center;
-          position: absolute;
+          /* position: absolute; */ /* 👈 THIS LINE IS REMOVED */
           width: 100%;
           padding: 0 20px;
         }
