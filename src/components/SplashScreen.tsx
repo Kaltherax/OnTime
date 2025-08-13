@@ -194,4 +194,16 @@ const SplashScreen = () => {
 
         @keyframes wind-streak-contained {
           0% { transform: translateX(0); }
-        
+          100% { transform: translateX(-550px); }
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default SplashScreen;
