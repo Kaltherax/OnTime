@@ -1,5 +1,5 @@
 // FILE: src/hooks/useMapLibre.ts
-// Updated with the full "Locate Bus" animation logic.
+// Updated to fix the initial animation delay and accuracy.
 
 import { useRef, useEffect, useState, useCallback } from 'react';
 import maplibregl, { Map, Marker } from 'maplibre-gl';
@@ -20,7 +20,6 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
   const userMarkerRef = useRef<Marker | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
-  // State to hold the bus location, which we'll update for the demo
   const [busLocation, setBusLocation] = useState<BusLocation>(initialBusLocation);
 
   // Effect for initializing the map instance
@@ -35,8 +34,10 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
       container: mapContainer.current,
       style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_API_KEY}`,
       center: [initialCoords.lng, initialCoords.lat],
-      zoom: 5, pitch: 60, bearing: -17.6,
-    }); 
+      zoom: 14, // Start at a reasonable zoom level
+      pitch: 60,
+      bearing: -17.6,
+    });
     map.current.on('load', () => setIsMapLoaded(true));
     return () => {
       map.current?.remove();
@@ -62,15 +63,18 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
           userMarkerRef.current = new Marker({ element: el }).setLngLat([userCoords.lng, userCoords.lat]).addTo(map.current!);
         }
         
-        // For demo: Place the bus ~2km away from the user
-        // 1 degree of latitude is ~111km. 2km is ~0.018 degrees.
+        // For demo: Place the bus ~30km away from the user
         const offsetLatitude = latitude + 0.28;
         setBusLocation(prev => ({...prev, coordinates: { lat: offsetLatitude, lng: longitude }}));
         
+        // Corrected Animation Sequence
         try {
-          await map.current?.flyTo({ zoom: 20, duration: 5000 });
-          await new Promise(resolve => setTimeout(resolve, 6000));
-          await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 19, duration: 8000, essential: true });
+          // 1. Zoom out smoothly
+          await map.current?.flyTo({ zoom: 5, duration: 4000 });
+          // 2. Wait for a shorter period
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          // 3. Accurately fly to the user and zoom in
+          await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 17, duration: 5000, essential: true });
         } catch (error) { console.log("Animation interrupted."); }
       },
       (error) => console.error("Error getting user location:", error.message)
@@ -84,12 +88,10 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
     const busCoords: [number, number] = [busLocation.coordinates.lng, busLocation.coordinates.lat];
     
     try {
-      // 1. Zoom out
-      await map.current?.flyTo({ zoom: 15, duration: 6000 });
-      // 2. Pan to the bus
-      await map.current?.flyTo({ center: busCoords, duration: 6000 });
-      // 3. Zoom in on the bus
-      await map.current?.flyTo({ center: busCoords, zoom: 17, duration: 9000 });
+      // Smoother timings for locating the bus
+      await map.current?.flyTo({ zoom: 12, duration: 2500 });
+      await map.current?.flyTo({ center: busCoords, duration: 3500 });
+      await map.current?.flyTo({ center: busCoords, zoom: 17, duration: 2500 });
     } catch (error) {
       console.log("Animation was interrupted.");
     }
@@ -97,7 +99,9 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
 
   // Initial animation on map load
   useEffect(() => {
-    if (isMapLoaded) handleRelocate();
+    if (isMapLoaded) {
+      handleRelocate();
+    }
   }, [isMapLoaded, handleRelocate]);
 
   // Effect for updating all markers
