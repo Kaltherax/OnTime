@@ -72,7 +72,7 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
           // 1. Zoom out smoothly
           await map.current?.flyTo({ zoom: 5, duration: 4000 });
           // 2. Wait for a shorter period
-          await new Promise(resolve => setTimeout(resolve, 5000));
+          await new Promise(resolve => setTimeout(resolve, 1000));
           // 3. Accurately fly to the user and zoom in
           await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 18, duration: 10000, essential: true });
         } catch (error) { console.log("Animation interrupted."); }
