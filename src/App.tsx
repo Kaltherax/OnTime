@@ -63,12 +63,9 @@ function App() {
   const selectedStop = currentRoute.stops.find(stop => stop.id === selectedStopId);
 
   return (
-    // --- THIS IS THE FIX ---
-    // This layout ensures both sections are visible
     <div className="h-screen bg-gray-50 flex flex-col">
       <Header />
       
-      {/* This makes the main content area scrollable if it's too tall */}
       <main className="flex-grow overflow-y-auto max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
@@ -96,7 +93,6 @@ function App() {
         </div>
       </main>
 
-      {/* The animation is now guaranteed to be visible at the bottom */}
       <ParallaxAnimation /> 
     </div>
   );
