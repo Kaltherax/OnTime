@@ -1,5 +1,5 @@
 // FILE: src/hooks/useMapLibre.ts
-// Updated to automatically center on the user's location.
+// Updated with a multi-step zoom-out, wait, and zoom-in animation.
 
 import { useRef, useEffect, useState } from 'react';
 import maplibregl, { Map, Marker } from 'maplibre-gl';
@@ -36,7 +36,7 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
       container: mapContainer.current,
       style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_API_KEY}`,
       center: [initialCoords.lng, initialCoords.lat],
-      zoom: 10,
+      zoom: 14,
       pitch: 45,
       bearing: -17.6,
     });
@@ -51,11 +51,34 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     };
   }, [route]);
 
-  // --- NEW --- Effect to get user's location and center the map
+  // Effect to get user's location and perform the multi-step animation
   useEffect(() => {
     if (!isMapLoaded || !map.current) return;
 
-    // Check if Geolocation is supported
+    const animateToLocation = async (coords: Coordinates) => {
+      if (!map.current) return;
+
+      try {
+        // 1. Zoom Out
+        await map.current.flyTo({ zoom: 3, duration: 2000 });
+
+        // 2. Wait for 1 second
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // 3. Zoom In to the new location
+        await map.current.flyTo({
+          center: [coords.lng, coords.lat],
+          zoom: 18,
+          duration: 2500,
+          essential: true,
+        });
+
+      } catch (error) {
+        // This can happen if the user interacts with the map during the animation
+        console.log("Animation was interrupted.");
+      }
+    };
+
     if (!navigator.geolocation) {
       console.log("Geolocation is not supported by your browser.");
       return;
@@ -67,17 +90,11 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
         const userCoords: Coordinates = { lat: latitude, lng: longitude };
         
         setUserLocation(userCoords);
-
-        // Animate the map to the user's location
-        map.current?.flyTo({
-          center: [userCoords.lng, userCoords.lat],
-          zoom: 18, // Zoom in closer on the user
-          essential: true,
-        });
+        animateToLocation(userCoords);
 
         // Add a marker for the user's location
         const el = document.createElement('div');
-        el.className = 'user-marker'; // You can style this in your CSS
+        el.className = 'user-marker';
         new Marker(el)
           .setLngLat([userCoords.lng, userCoords.lat])
           .addTo(map.current!);
@@ -86,7 +103,7 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
         console.error("Error getting user location:", error.message);
       }
     );
-  }, [isMapLoaded]); // Run this effect once the map is loaded
+  }, [isMapLoaded]);
 
   // Effect for updating markers on the map
   useEffect(() => {
