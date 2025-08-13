@@ -1,5 +1,5 @@
 // FILE: src/hooks/useMapLibre.ts
-// Updated to fix the initial animation delay and accuracy.
+// Rewritten for mobile compatibility and robust animations.
 
 import { useRef, useEffect, useState, useCallback } from 'react';
 import maplibregl, { Map, Marker } from 'maplibre-gl';
@@ -18,6 +18,7 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
   const map = useRef<Map | null>(null);
   const busMarkerRef = useRef<Marker | null>(null);
   const userMarkerRef = useRef<Marker | null>(null);
+  const isAnimatingRef = useRef(false);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [busLocation, setBusLocation] = useState<BusLocation>(initialBusLocation);
@@ -34,9 +35,7 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
       container: mapContainer.current,
       style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_API_KEY}`,
       center: [initialCoords.lng, initialCoords.lat],
-      zoom: 14, // Start at a reasonable zoom level
-      pitch: 60,
-      bearing: -17.6,
+      zoom: 14, pitch: 60, bearing: -17.6,
     });
     map.current.on('load', () => setIsMapLoaded(true));
     return () => {
@@ -47,7 +46,9 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
 
   // Handler for the "Relocate" button
   const handleRelocate = useCallback(() => {
-    if (!isMapLoaded || !map.current || !navigator.geolocation) return;
+    if (!isMapLoaded || !map.current || !navigator.geolocation || isAnimatingRef.current) return;
+
+    isAnimatingRef.current = true;
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -63,46 +64,48 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
           userMarkerRef.current = new Marker({ element: el }).setLngLat([userCoords.lng, userCoords.lat]).addTo(map.current!);
         }
         
-        // For demo: Place the bus ~30km away from the user
-        const offsetLatitude = latitude + 0.28;
-        setBusLocation(prev => ({...prev, coordinates: { lat: offsetLatitude, lng: longitude }}));
-        
-        // Corrected Animation Sequence
         try {
-          // 1. Zoom out smoothly
           await map.current?.flyTo({ zoom: 5, duration: 4000 });
-          // 2. Wait for a shorter period
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          // 3. Accurately fly to the user and zoom in
-          await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 18, duration: 10000, essential: true });
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 17, duration: 5000, essential: true });
         } catch (error) { console.log("Animation interrupted."); }
+        finally {
+          isAnimatingRef.current = false;
+        }
       },
-      (error) => console.error("Error getting user location:", error.message)
+      (error) => {
+        console.error("Error getting user location:", error.message);
+        isAnimatingRef.current = false;
+      }
     );
   }, [isMapLoaded]);
 
   // Handler for the "Locate Bus" button
   const handleLocateBus = useCallback(async () => {
-    if (!isMapLoaded || !map.current || !busLocation) return;
-
+    if (!isMapLoaded || !map.current || !busLocation || isAnimatingRef.current) return;
+    
+    isAnimatingRef.current = true;
     const busCoords: [number, number] = [busLocation.coordinates.lng, busLocation.coordinates.lat];
     
     try {
-      // Smoother timings for locating the bus
-      await map.current?.flyTo({ zoom: 12, duration: 5000 });
-      await map.current?.flyTo({ center: busCoords, duration: 4000 });
-      await map.current?.flyTo({ center: busCoords, zoom: 17, duration: 10000 });
+      await map.current?.flyTo({ zoom: 12, duration: 2500 });
+      await map.current?.flyTo({ center: busCoords, duration: 3500 });
+      await map.current?.flyTo({ center: busCoords, zoom: 17, duration: 2500 });
     } catch (error) {
       console.log("Animation was interrupted.");
+    } finally {
+      isAnimatingRef.current = false;
     }
   }, [isMapLoaded, busLocation]);
 
-  // Initial animation on map load
+  // --- SEPARATED --- Initial animation on map load
   useEffect(() => {
     if (isMapLoaded) {
-      handleRelocate();
+        // This logic now only runs once on the initial load
+        handleRelocate();
     }
-  }, [isMapLoaded, handleRelocate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMapLoaded]);
 
   // Effect for updating all markers
   useEffect(() => {
