@@ -35,8 +35,8 @@ const SplashScreen = () => {
   return (
     <div className="splash-container-full">
       <div className={`bus-icon ${busState}`}>
-        {/* Using an SVG for a crisp, scalable bus icon */}
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-24 h-24 text-blue-500">
+        {/* The className has been removed from the SVG */}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.5 5H18v2h-1.5V7zM6 7h1.5v2H6V7zm6 11.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
           <path d="M12 11.5c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" opacity=".3"/>
           <path d="M18.39 6.51l-1.42 1.42c.36.36.66.77.9 1.21L19.3 7.7a8.94 8.94 0 00-1.01-.99zM6.03 7.7l1.42 1.42c.24-.44.54-.85.9-1.21L6.93 6.51a8.94 8.94 0 00-1 .99z"/>
@@ -58,7 +58,6 @@ const SplashScreen = () => {
           position: fixed;
           inset: 0;
           display: flex;
-          flex-direction: column;
           align-items: center;
           justify-content: center;
           background-color: #f9fafb;
@@ -67,14 +66,23 @@ const SplashScreen = () => {
         }
 
         .bus-icon {
+          position: absolute;
+          top: 40%;
+          left: 0;
           transform: translateX(-100vw) scale(0.8);
           filter: drop-shadow(0 4px 20px rgba(59, 130, 246, 0.3));
           transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1);
-          margin-bottom: 2rem; /* Add some space between bus and text */
+        }
+        
+        /* --- NEW CSS FOR THE SVG --- */
+        .bus-icon svg {
+          width: 6rem; /* 96px */
+          height: 6rem; /* 96px */
+          color: #3b82f6; /* text-blue-500 */
         }
 
         .bus-icon.entering {
-          transform: translateX(0) scale(1);
+          transform: translateX(calc(50vw - 50%)) scale(1);
         }
 
         .bus-icon.exiting {
@@ -84,7 +92,6 @@ const SplashScreen = () => {
 
         .text-content {
           text-align: center;
-          /* position: absolute; */ /* 👈 THIS LINE IS REMOVED */
           width: 100%;
           padding: 0 20px;
         }
