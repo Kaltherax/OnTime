@@ -77,14 +77,17 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
               .addTo(map.current!);
         }
 
-        // --- Animation Sequence ---
+        // --- Animation Sequence with slower durations ---
         try {
-          await map.current?.flyTo({ zoom: 5, duration: 2000 });
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Zoom out over 3 seconds
+          await map.current?.flyTo({ zoom: 5, duration: 3000 }); 
+          // Wait for 1.2 seconds
+          await new Promise(resolve => setTimeout(resolve, 1200)); 
+          // Zoom in over 4 seconds
           await map.current?.flyTo({
             center: [userCoords.lng, userCoords.lat],
             zoom: 15,
-            duration: 2500,
+            duration: 4000, 
             essential: true,
           });
         } catch (error) {
