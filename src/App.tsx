@@ -4,7 +4,7 @@ import BusMap from './components/BusMap';
 import ETACard from './components/ETACard';
 import StopSelector from './components/StopSelector';
 import SplashScreen from './components/SplashScreen';
-import ParallaxAnimation from './components/ParallaxAnimation';
+// import ParallaxAnimation from './components/ParallaxAnimation'; // This is now removed
 import { useNotification } from './hooks/useNotification';
 import { 
   fetchBusLocation, 
@@ -63,10 +63,10 @@ function App() {
   const selectedStop = currentRoute.stops.find(stop => stop.id === selectedStopId);
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <main className="flex-grow overflow-y-auto max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <BusMap
@@ -93,7 +93,7 @@ function App() {
         </div>
       </main>
 
-      <ParallaxAnimation /> 
+      {/* The ParallaxAnimation component has been removed */} 
     </div>
   );
 }
