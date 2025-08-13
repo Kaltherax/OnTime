@@ -1,7 +1,7 @@
 // FILE: src/hooks/useMapLibre.ts
-// Updated with a multi-step zoom-out, wait, and zoom-in animation.
+// Updated to export a function that can trigger the relocation animation.
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import maplibregl, { Map, Marker } from 'maplibre-gl';
 import { BusRoute, BusLocation, Coordinates } from '../types/bus';
 
@@ -51,61 +51,58 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     };
   }, [route]);
 
-  // Effect to get user's location and perform the multi-step animation
-  useEffect(() => {
-    if (!isMapLoaded || !map.current) return;
-
-    const animateToLocation = async (coords: Coordinates) => {
-      if (!map.current) return;
-
-      try {
-        // 1. Zoom Out
-        await map.current.flyTo({ zoom: 5, duration: 8000 });
-
-        // 2. Wait for 1 second
-        await new Promise(resolve => setTimeout(resolve, 8000));
-
-        // 3. Zoom In to the new location
-        await map.current.flyTo({
-          center: [coords.lng, coords.lat],
-          zoom: 18,
-          duration: 8000,
-          essential: true,
-        });
-
-      } catch (error) {
-        // This can happen if the user interacts with the map during the animation
-        console.log("Animation was interrupted.");
-      }
-    };
-
-    if (!navigator.geolocation) {
-      console.log("Geolocation is not supported by your browser.");
+  // --- REFACTORED --- Logic for animation and getting location
+  const handleRelocate = useCallback(async () => {
+    if (!isMapLoaded || !map.current || !navigator.geolocation) {
+      console.log("Map not loaded or geolocation not supported.");
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude } = position.coords;
         const userCoords: Coordinates = { lat: latitude, lng: longitude };
         
         setUserLocation(userCoords);
-        animateToLocation(userCoords);
 
-        // Add a marker for the user's location
-        const el = document.createElement('div');
-        el.className = 'user-marker';
-        new Marker(el)
+        // Add or update the user marker
+        const userMarkerEl = document.querySelector('.user-marker') || document.createElement('div');
+        userMarkerEl.className = 'user-marker';
+        new Marker(userMarkerEl)
           .setLngLat([userCoords.lng, userCoords.lat])
           .addTo(map.current!);
+
+        // --- Animation Sequence ---
+        try {
+          // 1. Zoom Out
+          await map.current?.flyTo({ zoom: 5, duration: 2000 });
+          // 2. Wait for 1 second
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          // 3. Zoom In to the new location
+          await map.current?.flyTo({
+            center: [userCoords.lng, userCoords.lat],
+            zoom: 15,
+            duration: 2500,
+            essential: true,
+          });
+        } catch (error) {
+          console.log("Animation was interrupted.");
+        }
       },
       (error) => {
         console.error("Error getting user location:", error.message);
       }
     );
-  }, [isMapLoaded]);
+  }, [isMapLoaded]); // useCallback dependency
 
-  // Effect for updating markers on the map
+  // Effect to run the relocation animation on initial load
+  useEffect(() => {
+    if (isMapLoaded) {
+      handleRelocate();
+    }
+  }, [isMapLoaded, handleRelocate]);
+
+  // Effect for updating bus and stop markers
   useEffect(() => {
     if (!isMapLoaded || !map.current) return;
 
@@ -132,5 +129,5 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     }
   }, [isMapLoaded, route, busLocation, selectedStopId]);
 
-  return { mapContainer, userLocation, isMapLoaded };
+  return { mapContainer, userLocation, isMapLoaded, handleRelocate }; // 👈 Export the function
 };
