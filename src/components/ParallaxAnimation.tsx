@@ -62,10 +62,49 @@ const ParallaxAnimation = () => {
                 <path d="M594.470881,148.950741 L591.294014,151.571433 C587.638852,154.588205 580.922868,157 576.180772,157 L13.4417459,157 C8.30740914,157 3.75203894,152.860525 3.26480368,147.750913 L0.165709314,115.206205 C-0.267398067,110.664229 0.177608079,103.392385 1.16124897,98.94008 L21.0361416,8.928585 C22.1292344,3.98086207 27.0866126,0 32.1558247,0 L596.577702,0 C601.7631,0 606,4.23362221 606,9.4167241 L606,90.7248068 C606,95.193892 605.602422,102.451447 605.114202,106.886198 L602.037339,134.938957 C601.517669,139.686671 598.157724,145.907821 594.470881,148.950741 Z" id="bus-path"></path>
               </defs>
               <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                  <g transform="translate(14.000000, 4.000000)" fill="#6871FF" fillRule="nonzero">
-                      <use xlinkHref="#bus-path"></use>
+                  <g transform="translate(0, 0)">
+                      <g transform="translate(14.000000, 4.000000)">
+                          <use fill="#6871FF" fillRule="nonzero" xlinkHref="#bus-path"></use>
+                          <use stroke="#2D2754" strokeWidth="2" xlinkHref="#bus-path"></use>
+                      </g>
+                      <rect fill="#E85442" x="581" y="4" width="18" height="9" rx="4"></rect>
+                      <rect fill="#FFFFFF" x="56" y="4" width="18" height="9" rx="4"></rect>
+                      <path d="M11.16124897,102.94008 L31.0361416,12.928585 C31.5362725,10.6648164 37.0782373,11.7824808 37.0782373,13.4167241 L17.3174529,101.378459 C17.1123656,102.29137 16.3017522,102.94008 15.3660881,102.94008 L11.16124897,102.94008 Z" fill="#A6C3FF"></path>
+                      <rect fill="#FAEE5A" x="112" y="132" width="7" height="4" rx="2"></rect>
+                      <rect fill="#FAEE5A" x="324" y="132" width="7" height="4" rx="2"></rect>
+                      <rect fill="#FAEE5A" x="217" y="132" width="7" height="4" rx="2"></rect>
+                      <rect fill="#FAEE5A" x="465" y="132" width="7" height="4" rx="2"></rect>
+                      <rect fill="#FAEE5A" x="570" y="132" width="7" height="4" rx="2"></rect>
+                      <rect fill="#E3E4F6" x="27" y="107" width="581" height="9"></rect>
+                      <rect fill="#FAEE5A" x="27" y="119" width="581" height="3"></rect>
+                      <g transform="translate(46, 30)" fill="#4E54AA">
+                          <path d="M2,0 L55,0 C56.1045695,0 57,0.8954305 57,2 L57,131 L0,131 L0,2 C0,0.8954305 0.8954305,0 2,0 Z"></path>
+                      </g>
+                      <g transform="translate(485, 30)" fill="#4E54AA">
+                          <path d="M2,0 L55,0 C56.1045695,0 57,0.8954305 57,2 L57,131 L0,131 L0,2 C0,0.8954305 0.8954305,0 2,0 Z"></path>
+                      </g>
+                      <g transform="translate(113, 42)" fill="#373064">
+                          <rect x="0" y="0" width="54" height="43" rx="2.42"></rect>
+                      </g>
+                      <g transform="translate(171, 42)" fill="#373064">
+                          <rect x="0" y="0" width="54" height="43" rx="2.42"></rect>
+                      </g>
+                      <g transform="translate(237, 42)" fill="#373064">
+                          <rect x="0" y="0" width="54" height="43" rx="2.42"></rect>
+                      </g>
+                      <g transform="translate(361, 42)" fill="#373064">
+                          <rect x="0" y="0" width="54" height="43" rx="2.42"></rect>
+                      </g>
+                      <g transform="translate(554, 42)" fill="#373064">
+                          <rect x="0" y="0" width="54" height="43" rx="2.42"></rect>
+                      </g>
+                      <g transform="translate(295, 42)" fill="#373064">
+                          <rect x="0" y="0" width="54" height="43" rx="2.42"></rect>
+                      </g>
+                      <g transform="translate(419, 42)" fill="#373064">
+                          <rect x="0" y="0" width="54" height="43" rx="2.42"></rect>
+                      </g>
                   </g>
-                  {/* Additional details can be added here if needed */}
               </g>
             </svg>
             <div className="tyres-wrapper">
