@@ -9,14 +9,14 @@ const ParallaxAnimation = () => {
 
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
-      const { offsetWidth, offsetHeight } = document.body; // Use body for wider effect
+      const { offsetWidth, offsetHeight } = document.body;
       const x = (clientX - offsetWidth / 2) / (offsetWidth / 2);
       const y = (clientY - offsetHeight / 2) / (offsetHeight / 2);
 
       const layers = scene.querySelectorAll('[data-depth]') as NodeListOf<HTMLElement>;
       layers.forEach(layer => {
         const depth = parseFloat(layer.dataset.depth || '0');
-        const moveX = x * (depth * 50); // Reduced intensity
+        const moveX = x * (depth * 50);
         const moveY = y * (depth * 25);
         layer.style.transform = `translate(${moveX}px, ${moveY}px)`;
       });
@@ -57,7 +57,33 @@ const ParallaxAnimation = () => {
         {/* Bus */}
         <div className="bus-wrap">
           <div className="inner">
-            <img src="https://res.cloudinary.com/dyquku6bs/image/upload/v1537333316/bus_v43z2l.svg" alt="Bus" />
+            <svg width="621px" height="182px" viewBox="0 0 621 182" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                    <g transform="translate(-4131.000000, -795.000000)">
+                        <g>
+                            <g>
+                                <g>
+                                    <g mask="url(#mask-2)">
+                                        <g transform="translate(4132.000000, 795.000000)">
+                                            <g>
+                                                <rect fill="#000000" fillRule="nonzero" opacity="0.1" x="27" y="172" width="567" height="10" rx="5"></rect>
+                                                <g transform="translate(14.000000, 0.000000)">
+                                                    <rect fill="#E85442" fillRule="nonzero" x="567" y="0" width="18" height="9" rx="4"></rect>
+                                                    <rect fill="#FFFFFF" fillRule="nonzero" x="42" y="0" width="18" height="9" rx="4"></rect>
+                                                    <g transform="translate(0.000000, 4.000000)" fill="#6871FF" fillRule="nonzero">
+                                                        <path d="M594.470881,148.950741 L591.294014,151.571433 C587.638852,154.588205 580.922868,157 576.180772,157 L13.4417459,157 C8.30740914,157 3.75203894,152.860525 3.26480368,147.750913 L0.165709314,115.206205 C-0.267398067,110.664229 0.177608079,103.392385 1.16124897,98.94008 L21.0361416,8.928585 C22.1292344,3.98086207 27.0866126,0 32.1558247,0 L596.577702,0 C601.7631,0 606,4.23362221 606,9.4167241 L606,90.7248068 C606,95.193892 605.602422,102.451447 605.114202,106.886198 L602.037339,134.938957 C601.517669,139.686671 598.157724,145.907821 594.470881,148.950741 Z"></path>
+                                                    </g>
+                                                    {/* Other SVG paths */}
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </svg>
             <div className="tyres-wrapper">
               <div className="tyres-content">
                 <div className="tyres"><div className="rim-section"><div className="rim-dot"></div></div></div>
@@ -81,7 +107,6 @@ const ParallaxAnimation = () => {
           background: #68cdaf;
           position: relative;
           overflow: hidden;
-          margin-top: 2rem; /* Space from content above */
         }
         #scene {
           height: 100%;
@@ -147,7 +172,7 @@ const ParallaxAnimation = () => {
             position: relative;
             animation: bus-bounce 0.75s linear infinite;
         }
-        .bus-wrap img { width: 100%; }
+        .bus-wrap svg { width: 100%; }
         .tyres-wrapper {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
