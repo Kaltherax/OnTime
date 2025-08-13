@@ -1,5 +1,5 @@
 // FILE: src/hooks/useMapLibre.ts
-// Updated to remove the default blue marker circle.
+// Updated to include a function for locating the bus.
 
 import { useRef, useEffect, useState, useCallback } from 'react';
 import maplibregl, { Map, Marker } from 'maplibre-gl';
@@ -52,7 +52,7 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     };
   }, [route]);
 
-  // This is the button's click handler
+  // This is the button's click handler for relocating the user
   const handleRelocate = useCallback(() => {
     if (!isMapLoaded || !map.current || !navigator.geolocation) {
       console.log("Map not loaded or geolocation not supported.");
@@ -72,8 +72,6 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
         } else {
             const el = document.createElement('div');
             el.className = 'user-marker';
-            // --- THIS IS THE FIX ---
-            // Pass an object to the Marker constructor
             userMarkerRef.current = new Marker({ element: el })
               .setLngLat([userCoords.lng, userCoords.lat])
               .addTo(map.current!);
@@ -97,7 +95,28 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
         console.error("Error getting user location:", error.message);
       }
     );
-  }, [isMapLoaded]); // useCallback dependency
+  }, [isMapLoaded]);
+
+  // --- NEW --- This is the button's click handler for locating the bus
+  const handleLocateBus = useCallback(() => {
+    if (!isMapLoaded || !map.current || !busLocation) {
+      console.log("Map not loaded or bus location not available.");
+      return;
+    }
+
+    const busCoords: [number, number] = [busLocation.coordinates.lng, busLocation.coordinates.lat];
+
+    try {
+      map.current?.flyTo({
+        center: busCoords,
+        zoom: 16, // Zoom in a bit closer to the bus
+        duration: 2000,
+        essential: true,
+      });
+    } catch (error) {
+      console.log("Animation was interrupted.");
+    }
+  }, [isMapLoaded, busLocation]);
 
   // Effect to run the relocation animation only on initial load
   useEffect(() => {
@@ -116,7 +135,7 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     route.stops.forEach(stop => {
       const el = document.createElement('div');
       el.className = 'map-marker stop-marker';
-      new Marker(el)
+      new Marker({ element: el })
         .setLngLat([stop.coordinates.lng, stop.coordinates.lat])
         .addTo(map.current!);
     });
@@ -128,11 +147,11 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     } else {
       const el = document.createElement('div');
       el.className = 'map-marker bus-marker';
-      busMarkerRef.current = new Marker(el)
+      busMarkerRef.current = new Marker({ element: el })
         .setLngLat(busCoords)
         .addTo(map.current!);
     }
   }, [isMapLoaded, route, busLocation, selectedStopId]);
 
-  return { mapContainer, userLocation, isMapLoaded, handleRelocate }; // Export the function
+  return { mapContainer, userLocation, isMapLoaded, handleRelocate, handleLocateBus }; // Export the new function
 };
