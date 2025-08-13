@@ -63,7 +63,7 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
         await map.current.flyTo({ zoom: 5, duration: 8000 });
 
         // 2. Wait for 1 second
-        await new Promise(resolve => setTimeout(resolve, 4000));
+        await new Promise(resolve => setTimeout(resolve, 8000));
 
         // 3. Zoom In to the new location
         await map.current.flyTo({
