@@ -64,13 +64,13 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
         
         // For demo: Place the bus ~2.5km away from the user
         // 1 degree of latitude is ~111km. 2.5km is ~0.0225 degrees.
-        const offsetLatitude = latitude + 0.0225;
+        const offsetLatitude = latitude + 0.30;
         setBusLocation(prev => ({...prev, coordinates: { lat: offsetLatitude, lng: longitude }}));
         
         try {
           await map.current?.flyTo({ zoom: 5, duration: 2000 });
           await new Promise(resolve => setTimeout(resolve, 1000));
-          await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 15, duration: 2500, essential: true });
+          await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 15, duration: 8000, essential: true });
         } catch (error) { console.log("Animation interrupted."); }
       },
       (error) => console.error("Error getting user location:", error.message)
@@ -85,11 +85,11 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
     
     try {
       // 1. Zoom out
-      await map.current?.flyTo({ zoom: 12, duration: 2000 });
+      await map.current?.flyTo({ zoom: 12, duration: 4000 });
       // 2. Pan to the bus
-      await map.current?.flyTo({ center: busCoords, duration: 3000 });
+      await map.current?.flyTo({ center: busCoords, duration: 6000 });
       // 3. Zoom in on the bus
-      await map.current?.flyTo({ center: busCoords, zoom: 16, duration: 2000 });
+      await map.current?.flyTo({ center: busCoords, zoom: 16, duration: 10000 });
     } catch (error) {
       console.log("Animation was interrupted.");
     }
