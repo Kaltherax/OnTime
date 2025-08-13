@@ -71,7 +71,7 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
         // Animate the map to the user's location
         map.current?.flyTo({
           center: [userCoords.lng, userCoords.lat],
-          zoom: 18, // Zoom in closer on the user
+          zoom: 25, // Zoom in closer on the user
           essential: true,
         });
 
