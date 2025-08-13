@@ -1,257 +1,133 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const SplashScreen = () => {
-  return (
-    <div className="loading-overlay">
-      <div className="animation-container">
-        {/* Background Elements */}
-        <div className="mountain mountain1"></div>
-        <div className="mountain mountain2"></div>
-        
-        {/* Scenery Elements */}
-        <div className="scenery">
-          <div className="tree tree1"></div>
-          <div className="tree tree2"></div>
-          <div className="tree tree3"></div>
-        </div>
+  const [busState, setBusState] = useState('initial'); // 'initial', 'entering', 'exiting'
+  const [titleVisible, setTitleVisible] = useState(false);
+  const [subtitleVisible, setSubtitleVisible] = useState(false);
+  const [dotsVisible, setDotsVisible] = useState(false);
 
-        {/* Road and Bus */}
-        <div className="road">
-          <div className="bus">
-            <div className="bus-top-body">
-              <div className="bus-window"></div>
-              <div className="bus-window"></div>
-              <div className="bus-window"></div>
-              <div className="bus-window"></div>
-              <div className="bus-window"></div>
-            </div>
-            <div className="bus-middle-body">
-              <div className="stop-sign-base">
-                <div className="stop-sign-arm"></div>
-              </div>
-            </div>
-            <div className="wheel-front"></div>
-            <div className="wheel-back"></div>
-          </div>
-        </div>
-        
-        {/* Wind Effects */}
-        <div className="wind-container">
-            <div className="wind-line"></div>
-            <div className="wind-line"></div>
-            <div className="wind-line"></div>
-        </div>
-        <div className="wind-container wind-container2">
-            <div className="wind-line"></div>
-            <div className="wind-line"></div>
-            <div className="wind-line"></div>
-        </div>
+  useEffect(() => {
+    const sequence = async () => {
+      // 1. Bus enters
+      setBusState('entering');
+      await new Promise(resolve => setTimeout(resolve, 2500));
+
+      // 2. Show title
+      setTitleVisible(true);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // 3. Bus waits
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 4. Bus exits and subtitle appears
+      setBusState('exiting');
+      setSubtitleVisible(true);
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // 5. Show loading dots
+      await new Promise(resolve => setTimeout(resolve, 700)); // Adjusted delay
+      setDotsVisible(true);
+    };
+
+    sequence();
+  }, []);
+
+  return (
+    <div className="splash-container-full">
+      <div className={`bus-icon ${busState}`}>
+        {/* Using an SVG for a crisp, scalable bus icon */}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-24 h-24 text-blue-500">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.5 5H18v2h-1.5V7zM6 7h1.5v2H6V7zm6 11.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+          <path d="M12 11.5c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" opacity=".3"/>
+          <path d="M18.39 6.51l-1.42 1.42c.36.36.66.77.9 1.21L19.3 7.7a8.94 8.94 0 00-1.01-.99zM6.03 7.7l1.42 1.42c.24-.44.54-.85.9-1.21L6.93 6.51a8.94 8.94 0 00-1 .99z"/>
+        </svg>
       </div>
-      <div className="loading-tagline">
-        <p>Forget about guessing where your college bus is now</p>
+
+      <div className="text-content">
+        <h1 id="mainTitle" className={titleVisible ? 'visible' : ''}>On Time</h1>
+        <p id="subtitle" className={subtitleVisible ? 'visible' : ''}>
+          Forget about guessing where your college bus is now
+        </p>
+        <div id="loadingDots" className={dotsVisible ? 'visible' : ''}>
+          <span>.</span><span>.</span><span>.</span>
+        </div>
       </div>
 
       <style>{`
-        .loading-overlay {
+        .splash-container-full {
           position: fixed;
           inset: 0;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          background-color: rgba(249, 250, 251, 0.9);
+          background-color: #f9fafb;
           z-index: 9999;
-        }
-
-        .animation-container {
-          width: 500px;
-          height: 300px;
-          background-color: #f0f0f0;
-          border-radius: 16px;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-          position: relative;
           overflow: hidden;
-          border: 2px solid #ddd;
         }
 
-        .mountain {
-            position: absolute;
-            bottom: 20%;
-            width: 0;
-            height: 0;
-            border-left: 150px solid transparent;
-            border-right: 150px solid transparent;
-            border-bottom: 200px solid #a9a9a9;
-        }
-        .mountain1 { left: 0; }
-        .mountain2 { right: 0; }
-
-        .road {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 20%;
-          background: #444;
+        .bus-icon {
+          transform: translateX(-100vw) scale(0.8);
+          filter: drop-shadow(0 4px 20px rgba(59, 130, 246, 0.3));
+          transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .scenery {
-          position: absolute;
-          bottom: 20%;
-          left: 0;
-          width: 100%;
-          height: 10%;
+        .bus-icon.entering {
+          transform: translateX(0) scale(1);
         }
 
-        .tree {
-          position: absolute;
-          bottom: 0;
-          width: 10px;
-          height: 20px;
-          background-color: #8B4513;
-          animation: scenery-scroll-contained 5s linear infinite;
-        }
-        .tree::before {
-          content: '';
-          position: absolute;
-          bottom: 15px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 30px;
-          height: 30px;
-          background-color: #2E8B57;
-          border-radius: 50%;
-        }
-        .tree1 { left: 110%; animation-duration: 4s; }
-        .tree2 { left: 140%; animation-duration: 3.5s; animation-delay: 2s; }
-        .tree3 { left: 170%; animation-duration: 4.5s; animation-delay: 3s; }
-
-        .bus {
-          position: absolute;
-          bottom: 25%;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 150px;
-          height: 70px;
-          animation: bus-jiggle 0.5s infinite ease-in-out;
+        .bus-icon.exiting {
+          transition: transform 0.8s cubic-bezier(0.5, 0, 0.75, 0);
+          transform: translateX(100vw) scale(0.8);
         }
 
-        .bus-top-body {
-          width: 100%;
-          height: 45px;
-          background-color: #FFD700;
-          border-radius: 10px 10px 0 0;
-          border: 2px solid #DAA520;
-          display: flex;
-          justify-content: space-around;
-          align-items: center;
-          padding: 0 5px;
-        }
-        
-        .bus-window {
-            width: 15%;
-            height: 25px;
-            background: #E0FFFF;
-            border: 1px solid #87CEEB;
-        }
-
-        .bus-middle-body {
-            width: 100%;
-            height: 25px;
-            background-color: #FFD700;
-            border-left: 2px solid #DAA520;
-            border-right: 2px solid #DAA520;
-            border-bottom: 2px solid #DAA520;
-            position: relative;
-        }
-        
-        .stop-sign-base {
-            position: absolute;
-            left: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            background: red;
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-        .stop-sign-arm {
-            position: absolute;
-            left: -10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 10px;
-            height: 4px;
-            background: #444;
-        }
-
-        .wheel-front, .wheel-back {
-          position: absolute;
-          bottom: -15px;
-          width: 30px;
-          height: 30px;
-          background-color: #333;
-          border-radius: 50%;
-          border: 4px solid #555;
-          animation: spin 0.4s linear infinite;
-        }
-        .wheel-front { left: 15px; }
-        .wheel-back { right: 15px; }
-        
-        .wind-container {
-            position: absolute;
-            left: 50%;
-            top: 55%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            animation: wind-move 5s linear infinite;
-        }
-        .wind-container2 {
-            left: -50%;
-            animation-delay: 2.5s;
-        }
-        .wind-line {
-            width: 30px;
-            height: 2px;
-            background: #555;
-            border-radius: 2px;
-        }
-        .wind-line:nth-child(2) {
-            margin-left: 10px;
-        }
-
-        .loading-tagline {
-          margin-top: 20px;
+        .text-content {
           text-align: center;
+          position: absolute;
+          width: 100%;
+          padding: 0 20px;
         }
 
-        .loading-tagline p {
+        #mainTitle, #subtitle, #loadingDots {
+          opacity: 0;
+          transition: opacity 0.8s ease-in-out;
+        }
+
+        #mainTitle.visible, #subtitle.visible, #loadingDots.visible {
+          opacity: 1;
+        }
+
+        #mainTitle {
+          font-size: 3rem;
+          font-weight: 800;
+          color: #2563eb;
+          margin-bottom: 0.5rem;
+        }
+
+        #subtitle {
+          font-size: 1.125rem;
           color: #4b5563;
-          font-size: 1.1rem;
-          font-weight: 500;
+          margin-bottom: 2rem;
         }
 
-        @keyframes scenery-scroll-contained {
-          from { transform: translateX(250px); }
-          to { transform: translateX(-250px); }
-        }
-        
-        @keyframes wind-move {
-            from { transform: translateX(250px); }
-            to { transform: translateX(-250px); }
+        #loadingDots span {
+          animation: blink 1.4s infinite both;
+          font-size: 2rem;
+          font-weight: bold;
+          color: #9ca3af;
         }
 
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+        #loadingDots span:nth-child(2) {
+          animation-delay: 0.2s;
         }
-        
-        @keyframes bus-jiggle {
-            0%, 100% { transform: translate(-50%, 0); }
-            50% { transform: translate(-50%, -2px); }
+
+        #loadingDots span:nth-child(3) {
+          animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+          0%, 80%, 100% { opacity: 0; }
+          40% { opacity: 1; }
         }
       `}</style>
     </div>
