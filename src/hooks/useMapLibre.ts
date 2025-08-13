@@ -36,7 +36,7 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
       container: mapContainer.current,
       style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_API_KEY}`,
       center: [initialCoords.lng, initialCoords.lat],
-      zoom: 14,
+      zoom: 10,
       pitch: 45,
       bearing: -17.6,
     });
@@ -71,7 +71,7 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
         // Animate the map to the user's location
         map.current?.flyTo({
           center: [userCoords.lng, userCoords.lat],
-          zoom: 15, // Zoom in closer on the user
+          zoom: 18, // Zoom in closer on the user
           essential: true,
         });
 
