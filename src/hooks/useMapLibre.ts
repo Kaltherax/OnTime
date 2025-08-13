@@ -69,7 +69,7 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
         
         try {
           await map.current?.flyTo({ zoom: 5, duration: 5000 });
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise(resolve => setTimeout(resolve, 4000));
           await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 19, duration: 8000, essential: true });
         } catch (error) { console.log("Animation interrupted."); }
       },
