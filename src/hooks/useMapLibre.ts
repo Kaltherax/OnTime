@@ -68,7 +68,7 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
         setBusLocation(prev => ({...prev, coordinates: { lat: offsetLatitude, lng: longitude }}));
         
         try {
-          await map.current?.flyTo({ zoom: 17, duration: 2000 });
+          await map.current?.flyTo({ zoom: 5, duration: 2000 });
           await new Promise(resolve => setTimeout(resolve, 1000));
           await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 15, duration: 8000, essential: true });
         } catch (error) { console.log("Animation interrupted."); }
@@ -85,7 +85,7 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
     
     try {
       // 1. Zoom out
-      await map.current?.flyTo({ zoom: 12, duration: 4000 });
+      await map.current?.flyTo({ zoom: 17, duration: 4000 });
       // 2. Pan to the bus
       await map.current?.flyTo({ center: busCoords, duration: 6000 });
       // 3. Zoom in on the bus
