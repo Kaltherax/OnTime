@@ -64,7 +64,7 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
         
         // For demo: Place the bus ~2km away from the user
         // 1 degree of latitude is ~111km. 2km is ~0.018 degrees.
-        const offsetLatitude = latitude + 0.018;
+        const offsetLatitude = latitude + 0.28;
         setBusLocation(prev => ({...prev, coordinates: { lat: offsetLatitude, lng: longitude }}));
         
         try {
