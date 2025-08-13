@@ -57,7 +57,7 @@ const ParallaxAnimation = () => {
         {/* Bus */}
         <div className="bus-wrap">
           <div className="inner">
-            <svg width="621px" height="182px" viewBox="0 0 621 182" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <svg width="621px" height="182px" viewBox="0 0 621 182" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
               <defs>
                   <path d="M594.470881,148.950741 L591.294014,151.571433 C587.638852,154.588205 580.922868,157 576.180772,157 L13.4417459,157 C8.30740914,157 3.75203894,152.860525 3.26480368,147.750913 L0.165709314,115.206205 C-0.267398067,110.664229 0.177608079,103.392385 1.16124897,98.94008 L21.0361416,8.928585 C22.1292344,3.98086207 27.0866126,0 32.1558247,0 L596.577702,0 C601.7631,0 606,4.23362221 606,9.4167241 L606,90.7248068 C606,95.193892 605.602422,102.451447 605.114202,106.886198 L602.037339,134.938957 C601.517669,139.686671 598.157724,145.907821 594.470881,148.950741 Z" id="bus-path-full"></path>
               </defs>
@@ -207,4 +207,65 @@ const ParallaxAnimation = () => {
             z-index: 1;
             width: 18px;
             height: 18px;
-            backgrou
+            background: #f4f4f4;
+            border-radius: 50%;
+            border: 8px solid #333;
+        }
+        .rim-section {
+            position: relative;
+            width: 14px;
+            height: 14px;
+            background: #f3f3f3;
+            border-radius: 50%;
+            border: 2px solid #f1f1f1;
+        }
+        .rim-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 2px dashed #4e5066;
+            border-radius: 50%;
+            animation: rim-dot 2s linear infinite;
+        }
+        .road-wrap {
+            height: 150px;
+            background: #4a4953;
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+        }
+        .road-wrap .bar {
+            position: absolute;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.3) 40%, rgba(255, 255, 255, 0) 0%);
+            background-position: bottom;
+            background-size: 39px 9px;
+            background-repeat: repeat-x;
+            height: 4px;
+            left: 0;
+            width: 200%;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: slide-right 30s linear infinite;
+        }
+        .road-wrap:before {
+            position: absolute;
+            content: "";
+            left: 0;
+            right: 0;
+            top: 10px;
+            border-top: 5px solid #e6db69;
+        }
+        
+        @keyframes animateCloud3 { 0% { margin-left: 0; } 100% { margin-left: 100px; } }
+        @keyframes move-bg { from { transform: translateX(0); } to { transform: translateX(-3000px); } }
+        @keyframes bus-bounce { 0%, 40%, 100% { top: 1px; } 20%, 75% { top: 0px; } }
+        @keyframes rim-dot { from { transform: rotateZ(0deg); } to { transform: rotateZ(-360deg); } }
+        @keyframes slide-right { from { transform: translateX(0); } to { transform: translateX(-1500px); } }
+        @keyframes slide-right-rope { from { background-position: 0 0; } to { background-position: -3000px 0; } }
+        @keyframes slide-right-img { from { background-position: 0 0; } to { background-position: -1500px 0; } }
+      `}</style>
+    </div>
+  );
+};
+
+export default ParallaxAnimation;
