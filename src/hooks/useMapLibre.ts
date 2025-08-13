@@ -1,5 +1,5 @@
 // FILE: src/hooks/useMapLibre.ts
-// Updated to fix the relocate button functionality.
+// Updated to remove the default blue marker circle.
 
 import { useRef, useEffect, useState, useCallback } from 'react';
 import maplibregl, { Map, Marker } from 'maplibre-gl';
@@ -18,7 +18,7 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<Map | null>(null);
   const busMarkerRef = useRef<Marker | null>(null);
-  const userMarkerRef = useRef<Marker | null>(null); // 👈 Ref for the user marker
+  const userMarkerRef = useRef<Marker | null>(null); // Ref for the user marker
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
 
@@ -52,7 +52,7 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     };
   }, [route]);
 
-  // --- REFACTORED --- This is now the button's click handler
+  // This is the button's click handler
   const handleRelocate = useCallback(() => {
     if (!isMapLoaded || !map.current || !navigator.geolocation) {
       console.log("Map not loaded or geolocation not supported.");
@@ -72,19 +72,21 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
         } else {
             const el = document.createElement('div');
             el.className = 'user-marker';
-            userMarkerRef.current = new Marker(el)
+            // --- THIS IS THE FIX ---
+            // Pass an object to the Marker constructor
+            userMarkerRef.current = new Marker({ element: el })
               .setLngLat([userCoords.lng, userCoords.lat])
               .addTo(map.current!);
         }
 
         // --- Animation Sequence ---
         try {
-          await map.current?.flyTo({ zoom: 5, duration: 8000 });
-          await new Promise(resolve => setTimeout(resolve, 8000));
+          await map.current?.flyTo({ zoom: 5, duration: 2000 });
+          await new Promise(resolve => setTimeout(resolve, 1000));
           await map.current?.flyTo({
             center: [userCoords.lng, userCoords.lat],
-            zoom: 19,
-            duration: 8000,
+            zoom: 15,
+            duration: 2500,
             essential: true,
           });
         } catch (error) {
@@ -97,14 +99,13 @@ export const useMapLibre = ({ route, busLocation, selectedStopId }: UseMapLibreP
     );
   }, [isMapLoaded]); // useCallback dependency
 
-  // --- NEW --- Effect to run the relocation animation only on initial load
+  // Effect to run the relocation animation only on initial load
   useEffect(() => {
     if (isMapLoaded) {
-      // We call the relocate function once when the map loads for the initial animation
       handleRelocate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMapLoaded]); // This effect runs only when isMapLoaded changes to true
+  }, [isMapLoaded]);
 
   // Effect for updating bus and stop markers
   useEffect(() => {
