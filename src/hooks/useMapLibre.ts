@@ -35,7 +35,7 @@ export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedSt
       container: mapContainer.current,
       style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_API_KEY}`,
       center: [initialCoords.lng, initialCoords.lat],
-      zoom: 20, pitch: 45, bearing: -17.6,
+      zoom: 5, pitch: 60, bearing: -17.6,
     }); 
     map.current.on('load', () => setIsMapLoaded(true));
     return () => {
