@@ -1,56 +1,32 @@
 import React, { useState, useEffect } from 'react';
 
 const SplashScreen = () => {
-  const [busState, setBusState] = useState('initial'); // 'initial', 'entering', 'exiting'
-  const [titleVisible, setTitleVisible] = useState(false);
-  const [subtitleVisible, setSubtitleVisible] = useState(false);
-  const [dotsVisible, setDotsVisible] = useState(false);
+  const [textVisible, setTextVisible] = useState(false);
+  const [fadingOut, setFadingOut] = useState(false);
 
   useEffect(() => {
     const sequence = async () => {
-      // 1. Bus enters
-      setBusState('entering');
-      await new Promise(resolve => setTimeout(resolve, 2500));
-
-      // 2. Show title
-      setTitleVisible(true);
+      // 1. Fade in text
       await new Promise(resolve => setTimeout(resolve, 500));
+      setTextVisible(true);
 
-      // 3. Bus waits
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 2. Wait for 2 seconds while text is visible
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // 4. Bus exits and subtitle appears
-      setBusState('exiting');
-      setSubtitleVisible(true);
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // 5. Show loading dots
-      await new Promise(resolve => setTimeout(resolve, 700)); // Adjusted delay
-      setDotsVisible(true);
+      // 3. Start fading out
+      setFadingOut(true);
     };
 
     sequence();
   }, []);
 
   return (
-    <div className="splash-container-full">
-      <div className={`bus-icon ${busState}`}>
-        {/* The className has been removed from the SVG */}
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.5 5H18v2h-1.5V7zM6 7h1.5v2H6V7zm6 11.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
-          <path d="M12 11.5c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" opacity=".3"/>
-          <path d="M18.39 6.51l-1.42 1.42c.36.36.66.77.9 1.21L19.3 7.7a8.94 8.94 0 00-1.01-.99zM6.03 7.7l1.42 1.42c.24-.44.54-.85.9-1.21L6.93 6.51a8.94 8.94 0 00-1 .99z"/>
-        </svg>
-      </div>
-
+    <div className={`splash-container-full ${fadingOut ? 'fading-out' : ''}`}>
       <div className="text-content">
-        <h1 id="mainTitle" className={titleVisible ? 'visible' : ''}>On Time</h1>
-        <p id="subtitle" className={subtitleVisible ? 'visible' : ''}>
+        <h1 id="mainTitle" className={textVisible ? 'visible' : ''}>On Time</h1>
+        <p id="subtitle" className={textVisible ? 'visible' : ''}>
           Forget about guessing where your college bus is now
         </p>
-        <div id="loadingDots" className={dotsVisible ? 'visible' : ''}>
-          <span>.</span><span>.</span><span>.</span>
-        </div>
       </div>
 
       <style>{`
@@ -63,31 +39,12 @@ const SplashScreen = () => {
           background-color: #f9fafb;
           z-index: 9999;
           overflow: hidden;
+          opacity: 1;
+          transition: opacity 1s ease-in-out;
         }
 
-        .bus-icon {
-          position: absolute;
-          top: 40%;
-          left: 0;
-          transform: translateX(-100vw) scale(0.8);
-          filter: drop-shadow(0 4px 20px rgba(59, 130, 246, 0.3));
-          transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        
-        /* --- NEW CSS FOR THE SVG --- */
-        .bus-icon svg {
-          width: 6rem; /* 96px */
-          height: 6rem; /* 96px */
-          color: #3b82f6; /* text-blue-500 */
-        }
-
-        .bus-icon.entering {
-          transform: translateX(calc(50vw - 50%)) scale(1);
-        }
-
-        .bus-icon.exiting {
-          transition: transform 0.8s cubic-bezier(0.5, 0, 0.75, 0);
-          transform: translateX(100vw) scale(0.8);
+        .splash-container-full.fading-out {
+          opacity: 0;
         }
 
         .text-content {
@@ -96,12 +53,12 @@ const SplashScreen = () => {
           padding: 0 20px;
         }
 
-        #mainTitle, #subtitle, #loadingDots {
+        #mainTitle, #subtitle {
           opacity: 0;
-          transition: opacity 0.8s ease-in-out;
+          transition: opacity 1.5s ease-in-out;
         }
 
-        #mainTitle.visible, #subtitle.visible, #loadingDots.visible {
+        #mainTitle.visible, #subtitle.visible {
           opacity: 1;
         }
 
@@ -115,27 +72,6 @@ const SplashScreen = () => {
         #subtitle {
           font-size: 1.125rem;
           color: #4b5563;
-          margin-bottom: 2rem;
-        }
-
-        #loadingDots span {
-          animation: blink 1.4s infinite both;
-          font-size: 2rem;
-          font-weight: bold;
-          color: #9ca3af;
-        }
-
-        #loadingDots span:nth-child(2) {
-          animation-delay: 0.2s;
-        }
-
-        #loadingDots span:nth-child(3) {
-          animation-delay: 0.4s;
-        }
-
-        @keyframes blink {
-          0%, 80%, 100% { opacity: 0; }
-          40% { opacity: 1; }
         }
       `}</style>
     </div>
