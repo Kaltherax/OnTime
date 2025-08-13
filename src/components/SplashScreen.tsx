@@ -1,4 +1,3 @@
-import React, an
 import React, { useEffect, useRef } from 'react';
 
 const SplashScreen = () => {
