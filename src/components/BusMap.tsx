@@ -1,165 +1,108 @@
-// FILE: src/hooks/useMapLibre.ts
-// Final version with SVG import and all features implemented.
+// FILE: src/components/BusMap.tsx
+// This component displays the map and the control buttons.
 
-import { useRef, useEffect, useState, useCallback } from 'react';
-import maplibregl, { Map, Marker } from 'maplibre-gl';
-import { BusRoute, BusLocation, Coordinates } from '../types/bus';
-import busIconUrl from '/bus-icon.svg'; 
-import userIconUrl from '/user.svg'; // 👈 1. Import the user SVG
+import React from 'react';
+import { Navigation, LocateFixed, Bus } from 'lucide-react';
+import { BusRoute, BusLocation } from '../types/bus';
+import { useMapLibre } from '../hooks/useMapLibre';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
-interface UseMapLibreProps {
+interface BusMapProps {
   route: BusRoute;
   busLocation: BusLocation;
   selectedStopId: string | null;
+  className?: string;
 }
 
-const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_API_KEY;
+const BusMap: React.FC<BusMapProps> = ({
+  route,
+  busLocation,
+  selectedStopId,
+  className = '',
+}) => {
+  const { mapContainer, userLocation, isMapLoaded, handleRelocate, handleLocateBus } = useMapLibre({
+    route,
+    busLocation,
+    selectedStopId,
+  });
 
-export const useMapLibre = ({ route, busLocation: initialBusLocation, selectedStopId }: UseMapLibreProps) => {
-  const mapContainer = useRef<HTMLDivElement | null>(null);
-  const map = useRef<Map | null>(null);
-  const busMarkerRef = useRef<Marker | null>(null);
-  const userMarkerRef = useRef<Marker | null>(null);
-  const isAnimatingRef = useRef(false);
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
-  const [busLocation, setBusLocation] = useState<BusLocation>(initialBusLocation);
+  return (
+    <div className={`bg-white rounded-lg shadow-md overflow-hidden ${className}`}>
+      <div className="bg-gradient-to-r from-blue-50 to-green-50 px-4 py-3 border-b border-gray-200">
+        {/* Header content... */}
+      </div>
+      
+      <div className="relative">
+        <div  
+          ref={mapContainer}  
+          className="w-full h-96 md:h-[500px] relative"
+          style={{ minHeight: '400px' }}
+        />
+        
+        {/* Map Control Buttons */}
+        <div className="absolute top-3 right-3 flex flex-col space-y-2 z-10">
+          <button
+            onClick={handleRelocate}
+            className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200"
+            aria-label="Relocate to your position"
+          >
+            <LocateFixed className="w-5 h-5 text-gray-700" />
+          </button>
+          
+          <button
+            onClick={handleLocateBus}
+            className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200"
+            aria-label="Locate the bus"
+          >
+            <Bus className="w-5 h-5 text-gray-700" />
+          </button>
+        </div>
 
-  // Effect for initializing the map instance
-  useEffect(() => {
-    if (map.current || !mapContainer.current) return;
-    if (!MAPTILER_API_KEY) {
-      console.error("MapTiler API key is missing.");
-      return;
-    }
-    const initialCoords = route.stops[0].coordinates;
-    map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_API_KEY}`,
-      center: [initialCoords.lng, initialCoords.lat],
-      zoom: 14, pitch: 60, bearing: -17.6,
-    });
-    map.current.on('load', () => setIsMapLoaded(true));
-    return () => {
-      map.current?.remove();
-      map.current = null;
-    };
-  }, [route]);
+        {!isMapLoaded && (
+          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+            {/* Loading animation... */}
+          </div>
+        )}
+      </div>
+      
+      <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+        {/* Footer/Legend content... */}
+      </div>
 
-  // --- Effect for INITIAL animation ONLY ---
-  useEffect(() => {
-    if (!isMapLoaded) return;
-
-    const runInitialAnimation = () => {
-        if (!map.current || !navigator.geolocation || isAnimatingRef.current) return;
-        isAnimatingRef.current = true;
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude } = position.coords;
-                const userCoords = { lat: latitude, lng: longitude };
-                setUserLocation(userCoords);
-
-                // --- UPDATED ---
-                const el = document.createElement('img');
-                el.src = userIconUrl;
-                el.className = 'user-svg-marker'; // Use a new class for styling
-                userMarkerRef.current = new Marker({ element: el, anchor: 'bottom' }).setLngLat([userCoords.lng, userCoords.lat]).addTo(map.current!);
-
-                const offsetLatitude = latitude + 0.027;
-                setBusLocation(prev => ({ ...prev, coordinates: { lat: offsetLatitude, lng: longitude } }));
-
-                try {
-                    await map.current?.flyTo({ zoom: 5, duration: 4000 });
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 17, duration: 5000, essential: true });
-                } catch (e) { console.log("Initial animation interrupted."); }
-                finally { isAnimatingRef.current = false; }
-            },
-            (error) => {
-                console.error("Error on initial location:", error.message);
-                isAnimatingRef.current = false;
-            }
-        );
-    };
-    
-    runInitialAnimation();
-
-  }, [isMapLoaded]);
-
-
-  // --- UPDATED: Handler for the RELOCATE BUTTON ONLY ---
-  const handleRelocate = useCallback(() => {
-    if (!isMapLoaded || !map.current || !navigator.geolocation || isAnimatingRef.current) return;
-
-    isAnimatingRef.current = true;
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        const userCoords = { lat: latitude, lng: longitude };
-        setUserLocation(userCoords);
-
-        if (userMarkerRef.current) {
-          userMarkerRef.current.setLngLat([userCoords.lng, userCoords.lat]);
-        } else {
-          // --- UPDATED ---
-          const el = document.createElement('img');
-          el.src = userIconUrl;
-          el.className = 'user-svg-marker';
-          userMarkerRef.current = new Marker({ element: el, anchor: 'bottom' }).setLngLat([userCoords.lng, userCoords.lat]).addTo(map.current!);
+      <style>{`
+        /* --- Stop Marker Style --- */
+        .stop-marker {
+          width: 12px;
+          height: 12px;
+          background-color: #10B981; /* Green */
+          border-radius: 50%;
+          border: 2px solid white;
+          box-shadow: 0 0 5px rgba(0,0,0,0.5);
+          cursor: pointer;
         }
         
-        try {
-          await map.current?.flyTo({ zoom: 5, duration: 4000 });
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          await map.current?.flyTo({ center: [userCoords.lng, userCoords.lat], zoom: 17, duration: 5000, essential: true });
-        } catch (error) { console.log("Relocate animation interrupted."); }
-        finally { isAnimatingRef.current = false; }
-      },
-      (error) => {
-        console.error("Error getting user location:", error.message);
-        isAnimatingRef.current = false;
-      }
-    );
-  }, [isMapLoaded]);
-
-  // Handler for the "Locate Bus" button
-  const handleLocateBus = useCallback(async () => {
-    if (!isMapLoaded || !map.current || !busLocation || isAnimatingRef.current) return;
-    
-    isAnimatingRef.current = true;
-    const busCoords: [number, number] = [busLocation.coordinates.lng, busLocation.coordinates.lat];
-    
-    try {
-      await map.current?.flyTo({ zoom: 12, duration: 2500 });
-      await map.current?.flyTo({ center: busCoords, duration: 3500 });
-      await map.current?.flyTo({ center: busCoords, zoom: 17, duration: 2500 });
-    } catch (error) { console.log("Locate bus animation interrupted."); }
-    finally { isAnimatingRef.current = false; }
-  }, [isMapLoaded, busLocation]);
-
-  // Effect for updating all markers
-  useEffect(() => {
-    if (!isMapLoaded || !map.current) return;
-
-    document.querySelectorAll('.map-marker.stop-marker').forEach(el => el.remove());
-    route.stops.forEach(stop => {
-      const el = document.createElement('div');
-      el.className = 'map-marker stop-marker';
-      new Marker({ element: el }).setLngLat([stop.coordinates.lng, stop.coordinates.lat]).addTo(map.current!);
-    });
-
-    const busCoords: [number, number] = [busLocation.coordinates.lng, busLocation.coordinates.lat];
-    if (busMarkerRef.current) {
-      busMarkerRef.current.setLngLat(busCoords);
-    } else {
-      const el = document.createElement('img');
-      el.src = busIconUrl; // Use the imported SVG
-      el.className = 'bus-svg-marker';
-      busMarkerRef.current = new Marker({ element: el, anchor: 'bottom' })
-        .setLngLat(busCoords)
-        .addTo(map.current!);
-    }
-  }, [isMapLoaded, route, busLocation, selectedStopId]);
-
-  return { mapContainer, userLocation, isMapLoaded, handleRelocate, handleLocateBus };
+        /* --- SVG User Marker Style --- */
+        .user-svg-marker {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        /* --- SVG Bus Marker Style --- */
+        .bus-svg-marker {
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+            transition: transform 0.2s ease-in-out;
+        }
+        .bus-svg-marker:hover {
+            transform: scale(1.1);
+        }
+      `}</style>
+    </div>
+  );
 };
+
+export default BusMap;
